@@ -1,0 +1,39 @@
+
+name: Android Release CI with Firebase-ready
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Create app folder
+        run: mkdir -p android/app
+
+      - name: Decode keystore
+        run: echo "${{ secrets.SIGNING_STORE_BASE64 }}" | base64 --decode > android/app/release.keystore
+
+      - name: List android files
+        run: ls -la android || true
+
+      - name: Build Release APK
+        run: ./gradlew assembleRelease -Pandroid.injected.signing.store.file=app/release.keystore -Pandroid.injected.signing.store.password="${{ secrets.SIGNING_STORE_PASSWORD }}" -Pandroid.injected.signing.key.alias="${{ secrets.SIGNING_KEY_ALIAS }}" -Pandroid.injected.signing.key.password="${{ secrets.SIGNING_KEY_PASSWORD }}"
+        working-directory: android
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tft-ai-coach-signed-apk
+          path: android/app/build/outputs/apk/release/app-release.apk
