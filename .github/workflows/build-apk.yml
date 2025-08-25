@@ -21,11 +21,11 @@ jobs:
     - name: Set up Android SDK
       uses: android-actions/setup-android@v2
 
-    - name: Decode keystore from Secret
-      run: |
-        echo $KEYSTORE_BASE64 | base64 --decode > android/app/release.keystore
-      env:
-        KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+- name: Decode keystore from Secret
+  run: |
+    echo $KEYSTORE_BASE64 | base64 --decode > android/app/release.keystore
+  env:
+    KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
     - name: Build Release APK
       run: ./gradlew assembleRelease
