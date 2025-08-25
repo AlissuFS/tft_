@@ -1,0 +1,9 @@
+{
+  "project_info": {
+    "project_number": "1234567890",
+    "project_id": "tft-ai-coach-demo",
+    "storage_bucket": "tft-ai-coach-demo.appspot.com"
+  },
+  "client": [],
+  "configuration_version": "1"
+}
