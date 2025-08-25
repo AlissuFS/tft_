@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content"
-    android:padding="12dp" android:background="#B3000000">
-    <TextView android:id="@+id/title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TFT AI Coach" android:textColor="#FFFFFF" android:textSize="16sp"/>
-    <TextView android:id="@+id/augment_info" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Augment: -" android:textColor="#FFFFFF" android:textSize="14sp"/>
-    <TextView android:id="@+id/comp_info" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Comp: -" android:textColor="#FFFFFF" android:textSize="14sp"/>
-    <TextView android:id="@+id/postgame" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Postgame: -" android:textColor="#FFFFFF" android:textSize="12sp"/>
-</LinearLayout>
