@@ -9,24 +9,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Checkout do repositório
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Setup do Java 17
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: temurin
+          java-version: 17
 
+      # 3. Setup do Android SDK
       - name: Set up Android SDK
         uses: android-actions/setup-android@v2
         with:
           api-level: 33
           build-tools: 33.0.2
 
+      # 4. Cache do Gradle
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      # 5. Build do APK de debug
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
+      # 6. Upload do APK gerado
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
