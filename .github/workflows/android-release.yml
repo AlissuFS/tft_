@@ -26,11 +26,16 @@ jobs:
       - name: Decode keystore
         run: echo "${{ secrets.SIGNING_STORE_BASE64 }}" | base64 --decode > android/app/release.keystore
 
+      - name: Check Gradle version
+        run: ./gradlew --version
+        working-directory: android
+
       - name: Build Release APK
-        run: ./gradlew assembleRelease -Pandroid.injected.signing.store.file=android/app/release.keystore \
+        run: ./gradlew assembleRelease -Pandroid.injected.signing.store.file=app/release.keystore \
             -Pandroid.injected.signing.store.password="${{ secrets.SIGNING_STORE_PASSWORD }}" \
             -Pandroid.injected.signing.key.alias="${{ secrets.SIGNING_KEY_ALIAS }}" \
             -Pandroid.injected.signing.key.password="${{ secrets.SIGNING_KEY_PASSWORD }}"
+        working-directory: android
 
       - name: Upload signed APK artifact
         uses: actions/upload-artifact@v4
