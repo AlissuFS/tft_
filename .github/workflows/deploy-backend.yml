@@ -1,25 +1,18 @@
-name: Deploy Backend to Render
-
-on:
-  workflow_dispatch:
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      # Instala o CLI do Render
+      - name: Install Node.js (necessário para Render CLI)
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
       - name: Install Render CLI
-        run: curl -fsSL https://render.com/static/cli/install.sh | bash
+        run: npm install -g @render/render-cli
 
-      # Adiciona o CLI ao PATH
-      - name: Add Render CLI to PATH
-        run: echo "$HOME/.render/bin" >> $GITHUB_PATH
-
-      # Deploy do serviço
-      - name: Deploy service on Render
+      - name: Deploy service
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-        run: render deploy service --service-id ${{ secrets.RENDER_SERVICE_ID }}
+        run: render deploy service --service-id srv-d2ms69vfte5s738o8dbg
