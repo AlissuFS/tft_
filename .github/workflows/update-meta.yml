@@ -43,13 +43,19 @@ jobs:
           cd android
           ./gradlew assembleDebug --stacktrace --info --warning-mode all
 
-      # 6. Mostrar todos os APKs gerados
+      # 6. Garantir que a pasta outputs exista
+      - name: Ensure outputs folder exists
+        run: |
+          mkdir -p android/app/build/outputs/
+          echo "Folder android/app/build/outputs/ is ready"
+
+      # 7. Mostrar todos os APKs gerados
       - name: Find APKs
         run: |
           echo "Looking for APKs..."
           find android/app/build/outputs/ -name "*.apk" || echo "No APKs found"
 
-      # 7. Upload de qualquer APK gerado
+      # 8. Upload de qualquer APK gerado
       - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
