@@ -1,43 +1,42 @@
 name: Deploy to Render
 
+# Gatilho: roda quando houver push na branch main
 on:
   push:
     branches:
       - main
+  workflow_dispatch:  # permite rodar manualmente pelo GitHub
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      # 1. Pegar o código do repositório
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      # Instalar Node.js (necessário para Render CLI)
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      # Instalar Render CLI
-      -  name: Install Render CLI
-        run: |
-        curl -sSL https://cdn.render.com/cli/latest/linux/render -o /usr/local/bin/render
-        chmod +x /usr/local/bin/render
-
-
-      # Instalar Python e Poetry
+      # 2. Configurar Python
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.13'
 
+      # 3. Instalar Poetry
       - name: Install Poetry
         run: curl -sSL https://install.python-poetry.org | python3 -
 
+      # 4. Instalar dependências via Poetry
       - name: Install dependencies
         run: poetry install
 
-      # Deploy no Render
+      # 5. Instalar Render CLI via binário
+      - name: Install Render CLI
+        run: |
+          curl -sSL https://cdn.render.com/cli/latest/linux/render -o /usr/local/bin/render
+          chmod +x /usr/local/bin/render
+
+      # 6. Deploy no Render
       - name: Deploy to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
