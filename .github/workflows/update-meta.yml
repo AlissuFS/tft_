@@ -1,4 +1,4 @@
-name: Build APK and Update Meta
+name: Build Release APK
 
 on:
   workflow_dispatch:
@@ -21,45 +21,21 @@ jobs:
 
       # 3. Garantir permissão de execução do gradlew
       - name: Make gradlew executable
-        run: chmod +x ./android/gradlew
+        run: chmod +x android/gradlew
 
-      # 4. Build do APK (gera todos os flavors possíveis)
+      # 4. Build APK (release instalável)
       - name: Build APK
-        run: ./android/gradlew clean assembleRelease --no-daemon
+        run: |
+          cd android
+          ./gradlew clean assembleRelease --no-daemon
 
-      # 5. Debug APKs gerados
-      - name: List APK outputs
-        run: ls -alR android/app/build/outputs/apk/
+      # 5. Listar outputs (debug)
+      - name: List build outputs
+        run: ls -alR android/app/build/outputs/
 
-      # 6. Upload de TODOS os APKs (release, debug, flavors etc.)
-      - name: Upload APKs
+      # 6. Upload do APK instalável
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: tft-coach-apks
-          path: android/app/build/outputs/apk/**/*.apk
-
-      # 7. Configurar Python e Poetry
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.13'
-
-      - name: Install dependencies with Poetry
-        run: |
-          python -m pip install --upgrade pip
-          pip install poetry
-          poetry install --no-interaction --no-ansi
-
-      # 8. Debug: verificar estrutura do repositório
-      - name: Show repo structure
-        run: ls -R
-
-      # 9. Configurar PYTHONPATH para a raiz do repo
-      - name: Set PYTHONPATH
-        run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
-
-      # 10. Rodar update_meta como módulo Python (mais confiável)
-      - name: Run update_meta
-        run: poetry run python -m backend.update_meta
-        env:
-          TFT_META_API_KEY: ${{ secrets.TFT_META_API_KEY }}
+          name: app-release-apk
+          path: android/app/build/outputs/apk/release/*.apk
