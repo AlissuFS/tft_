@@ -19,8 +19,11 @@ jobs:
           node-version: '18'
 
       # Instalar Render CLI
-      - name: Install Render CLI
-        run: npm install -g @render/render-cli
+      -  name: Install Render CLI
+        run: |
+        curl -sSL https://cdn.render.com/cli/latest/linux/render -o /usr/local/bin/render
+        chmod +x /usr/local/bin/render
+
 
       # Instalar Python e Poetry
       - name: Setup Python
