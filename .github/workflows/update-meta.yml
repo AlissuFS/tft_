@@ -17,6 +17,9 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Give gradlew permission
+        run: chmod +x android/gradlew
+
       - name: Build release APK
         run: |
           cd android
