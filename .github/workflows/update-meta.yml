@@ -50,17 +50,18 @@ jobs:
         working-directory: ./tft_
         run: poetry install --no-interaction --no-ansi --no-root
 
-      # 7. Execute update_meta()
+      # 7. Execute update_meta() com PYTHONPATH
       - name: Run update_meta
         working-directory: ./tft_
         env:
           TFT_META_API_KEY: ${{ secrets.TFT_META_API_KEY }}
+          PYTHONPATH: ${{ github.workspace }}/tft_
         run: poetry run python -c "from backend.update_meta import update_meta; update_meta()"
 
       # 8. Install renderctl for deploy
       - name: Install renderctl
         run: |
-          RENDERCTL_VERSION="v0.1.0"  # substitua pela última versão do renderctl
+          RENDERCTL_VERSION="v0.1.0"  # substitua pela última versão disponível
           curl -sSL "https://github.com/render-oss/renderctl/releases/download/${RENDERCTL_VERSION}/renderctl-linux-amd64" -o /usr/local/bin/renderctl
           chmod +x /usr/local/bin/renderctl
 
