@@ -50,9 +50,9 @@ jobs:
         working-directory: ./tft_
         run: poetry install --no-interaction --no-ansi --no-root
 
-      # 7. Execute update_meta() com PYTHONPATH
+      # 7. Execute update_meta() com PYTHONPATH ajustado
       - name: Run update_meta
-        working-directory: ./tft_
+        working-directory: ${{ github.workspace }}
         env:
           TFT_META_API_KEY: ${{ secrets.TFT_META_API_KEY }}
           PYTHONPATH: ${{ github.workspace }}/tft_
