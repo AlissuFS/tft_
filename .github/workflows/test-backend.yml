@@ -1,0 +1,30 @@
+name: Test Backend
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Install dependencies
+        run: pip install -r backend/requirements.txt
+
+      - name: Test Endpoints
+        env:
+          TFT_BACKEND_URL: ${{ secrets.TFT_BACKEND_URL }}
+        run: |
+          echo "Testing /predict endpoint"
+          curl -s $TFT_BACKEND_URL/predict
+          echo "\nTesting /history endpoint"
+          curl -s $TFT_BACKEND_URL/history
+          echo "\nTesting /export endpoint"
+          curl -s $TFT_BACKEND_URL/export
