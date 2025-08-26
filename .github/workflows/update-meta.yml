@@ -28,7 +28,7 @@ jobs:
       # 4. Ensure pyproject.toml exists
       - name: Ensure pyproject.toml
         run: |
-          mkdir -p ./tft_
+          mkdir -p ./tft_          # Cria apenas uma camada de diretório
           cd ./tft_
           if [ ! -f pyproject.toml ]; then
             poetry init --name tft --no-interaction
@@ -50,9 +50,9 @@ jobs:
         working-directory: ./tft_
         run: poetry install --no-interaction --no-ansi --no-root
 
-      # 7. Execute update_meta() com PYTHONPATH ajustado
+      # 7. Execute update_meta() com PYTHONPATH correto
       - name: Run update_meta
-        working-directory: ${{ github.workspace }}
+        working-directory: ./tft_
         env:
           TFT_META_API_KEY: ${{ secrets.TFT_META_API_KEY }}
           PYTHONPATH: ${{ github.workspace }}/tft_
