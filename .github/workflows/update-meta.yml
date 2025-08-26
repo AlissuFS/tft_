@@ -7,35 +7,36 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      ANDROID_SDK_ROOT: /usr/local/android-sdk
+
     steps:
       # 1. Checkout do código
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Configurar JDK 17
+      # 2. Set up JDK 17
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 17
 
-      # 3. Verificar se a pasta android/app existe
-      - name: Check android/app folder
+      # 3. Install required Android SDK packages
+      - name: Install Android SDK
         run: |
-          if [ ! -d "android/app" ]; then
-            echo "android/app does not exist. Skipping build."
-            exit 0
-          fi
+          sudo mkdir -p $ANDROID_SDK_ROOT
+          sudo chown $USER:$USER $ANDROID_SDK_ROOT
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
+          unzip cmdline-tools.zip -d $ANDROID_SDK_ROOT
+          mkdir -p $ANDROID_SDK_ROOT/cmdline-tools/latest
+          mv $ANDROID_SDK_ROOT/cmdline-tools/* $ANDROID_SDK_ROOT/cmdline-tools/latest/
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
 
-      # 4. Dar permissão de execução para gradlew, se existir
+      # 4. Dar permissão de execução para gradlew
       - name: Give gradlew permission
-        run: |
-          if [ -f "android/gradlew" ]; then
-            chmod +x android/gradlew
-          else
-            echo "gradlew not found. Skipping build."
-            exit 0
-          fi
+        run: chmod +x android/gradlew
 
       # 5. Build Debug APK
       - name: Build Debug APK
@@ -43,7 +44,7 @@ jobs:
           cd android
           ./gradlew assembleDebug --stacktrace --info --warning-mode all
 
-      # 6. Listar todos os APKs gerados
+      # 6. Mostrar todos os APKs gerados
       - name: Find APKs
         run: |
           echo "Looking for APKs..."
