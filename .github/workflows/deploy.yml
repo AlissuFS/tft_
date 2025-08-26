@@ -50,18 +50,9 @@ jobs:
         working-directory: ./tft_
         run: poetry install --no-interaction --no-ansi --no-root
 
-      # 7. Setup Node.js (para instalar Render CLI)
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      # 8. Install Render CLI via npm
-      - name: Install Render CLI
-        run: npm install -g @render/render-cli
-
-      # 9. Deploy to Render
+      # 7. Deploy to Render usando Action oficial
       - name: Deploy to Render
-        env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-        run: render deploy service --service-id srv-d2ms69vfte5s738o8dbg
+        uses: render-examples/deploy-action@v1
+        with:
+          api-key: ${{ secrets.RENDER_API_KEY }}
+          service-id: srv-d2ms69vfte5s738o8dbg
