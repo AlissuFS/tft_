@@ -8,23 +8,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Pegar o código do repositório
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # 2. Configurar JDK
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
           java-version: '17'
           distribution: 'temurin'
 
+      # 3. Garantir permissão de execução do gradlew
       - name: Make gradlew executable
         run: chmod +x ./android/gradlew
 
+      # 4. Build do APK (limpando builds antigos)
       - name: Build APK
-        run: ./android/gradlew assembleRelease
+        run: ./android/gradlew clean assembleRelease --no-daemon
 
+      # 5. Listar arquivos gerados (opcional, útil para debug)
+      - name: List APK outputs
+        run: ls -R android/app/build/outputs/apk/
+
+      # 6. Upload do APK gerado (qualquer APK na pasta release)
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: tft-coach-apk
-          path: android/app/build/outputs/apk/release/app-release.apk
+          path: android/app/build/outputs/apk/release/*.apk
