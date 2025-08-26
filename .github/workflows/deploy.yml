@@ -31,7 +31,8 @@ jobs:
           mkdir -p ./tft_   # cria pasta do projeto se não existir
           cd ./tft_
           if [ ! -f pyproject.toml ]; then
-            poetry init --no-interaction
+            # Define um nome válido para o projeto
+            poetry init --name tft --no-interaction
           fi
 
       # 5. Cache do Poetry (dependências)
@@ -47,17 +48,4 @@ jobs:
 
       # 6. Instalar dependências via Poetry
       - name: Install dependencies
-        working-directory: ./tft_
-        run: poetry install --no-interaction --no-ansi
-
-      # 7. Instalar Render CLI
-      - name: Install Render CLI
-        run: |
-          curl -sSL https://cdn.render.com/cli/latest/linux/render -o /usr/local/bin/render
-          chmod +x /usr/local/bin/render
-
-      # 8. Deploy no Render
-      - name: Deploy to Render
-        env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-        run: render deploy service --service-id srv-d2ms69vfte5s738o8dbg
+        working-directory: .
