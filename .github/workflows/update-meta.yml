@@ -1,4 +1,4 @@
-name: Build Android App
+name: Build Android APK/AAB
 
 on:
   workflow_dispatch:
@@ -8,34 +8,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Pegar o código do repositório
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Configurar JDK para Android
-      - name: Set up JDK
+      - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
-          java-version: '17'
-          distribution: 'temurin'
+          distribution: temurin
+          java-version: 17
 
-      # 3. Garantir permissão de execução do gradlew
-      - name: Make gradlew executable
-        run: chmod +x android/gradlew
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-      # 4. Build do app (APK ou AAB)
-      - name: Build Android App
+      - name: Install dependencies
+        run: |
+          npm install
+          cd android
+          ./gradlew dependencies
+
+      - name: Build release APK
         run: |
           cd android
-          ./gradlew clean assembleRelease --stacktrace --no-daemon
+          ./gradlew assembleRelease
 
-      # 5. Debug: listar todos os outputs (APK ou AAB)
+      - name: Build release AAB (just in case)
+        run: |
+          cd android
+          ./gradlew bundleRelease
+
       - name: List build outputs
         run: ls -alR android/app/build/outputs/ || true
 
-      # 6. Upload de APK ou AAB (qualquer formato gerado)
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: android-build
-          path: android/app/build/outputs/**/*.{apk,aab}
+          path: |
+            android/app/build/outputs/**/*.apk
+            android/app/build/outputs/**/*.aab
