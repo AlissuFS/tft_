@@ -1,4 +1,4 @@
-name: Build Release APK
+name: Build Android App
 
 on:
   workflow_dispatch:
@@ -23,19 +23,19 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x android/gradlew
 
-      # 4. Build APK (release instalável)
-      - name: Build APK
+      # 4. Build do app (APK ou AAB)
+      - name: Build Android App
         run: |
           cd android
-          ./gradlew clean assembleRelease --no-daemon
+          ./gradlew clean assembleRelease --stacktrace --no-daemon
 
-      # 5. Listar outputs (debug)
+      # 5. Debug: listar todos os outputs (APK ou AAB)
       - name: List build outputs
-        run: ls -alR android/app/build/outputs/
+        run: ls -alR android/app/build/outputs/ || true
 
-      # 6. Upload do APK instalável
-      - name: Upload APK
+      # 6. Upload de APK ou AAB (qualquer formato gerado)
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-apk
-          path: android/app/build/outputs/apk/release/*.apk
+          name: android-build
+          path: android/app/build/outputs/**/*.{apk,aab}
