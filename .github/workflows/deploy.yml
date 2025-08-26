@@ -25,7 +25,7 @@ jobs:
       - name: Install Poetry
         run: curl -sSL https://install.python-poetry.org | python3 -
 
-      # 4. Ensure pyproject.toml
+      # 4. Ensure pyproject.toml exists
       - name: Ensure pyproject.toml
         run: |
           mkdir -p ./tft_
@@ -45,10 +45,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-poetry-
 
-      # 6. Install dependencies via Poetry
+      # 6. Install dependencies via Poetry (somente dependências, sem instalar o projeto)
       - name: Install dependencies
         working-directory: ./tft_
-        run: poetry install --no-interaction --no-ansi
+        run: poetry install --no-interaction --no-ansi --no-root
 
       # 7. Install Render CLI
       - name: Install Render CLI
