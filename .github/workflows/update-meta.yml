@@ -1,4 +1,4 @@
-name: Build Android Debug APK
+name: Build Android APK Safely
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Pegar o código
+      # 1. Checkout do código
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -19,24 +19,35 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      # 3. Dar permissão de execução para gradlew
+      # 3. Verifica se a pasta android/app existe
+      - name: Check android/app folder
+        run: |
+          if [ ! -d "android/app" ]; then
+            echo "android/app does not exist. Skipping build."
+            exit 0
+          fi
+
+      # 4. Dar permissão de execução para gradlew
       - name: Give gradlew permission
+        if: exists('android/gradlew')
         run: chmod +x android/gradlew
 
-      # 4. Build APK debug
+      # 5. Build Debug APK
       - name: Build Debug APK
+        if: exists('android/gradlew')
         run: |
           cd android
           ./gradlew assembleDebug --stacktrace --info --warning-mode all
 
-      # 5. Listar outputs para debug
-      - name: List build outputs
-        run: ls -alR android/app/build/outputs/ || true
+      # 6. Mostrar todos os arquivos gerados
+      - name: Find APKs
+        if: exists('android/app/build/outputs/')
+        run: find android/app/build/outputs/ -name "*.apk"
 
-      # 6. Upload do APK debug
-      - name: Upload Debug APK
+      # 7. Upload de qualquer APK gerado
+      - name: Upload APKs
+        if: exists('android/app/build/outputs/')
         uses: actions/upload-artifact@v4
         with:
-          name: android-debug-apk
+          name: android-apk
           path: android/app/build/outputs/**/*.apk
-
