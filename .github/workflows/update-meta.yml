@@ -23,20 +23,20 @@ jobs:
       - name: Make gradlew executable
         run: chmod +x ./android/gradlew
 
-      # 4. Build do APK (limpando builds antigos)
+      # 4. Build do APK (gera todos os flavors possíveis)
       - name: Build APK
         run: ./android/gradlew clean assembleRelease --no-daemon
 
-      # 5. Listar arquivos gerados (debug)
+      # 5. Debug APKs gerados
       - name: List APK outputs
-        run: ls -alR android/app/build/outputs/apk/release
+        run: ls -alR android/app/build/outputs/apk/
 
-      # 6. Upload do APK
-      - name: Upload APK
+      # 6. Upload de TODOS os APKs (release, debug, flavors etc.)
+      - name: Upload APKs
         uses: actions/upload-artifact@v4
         with:
-          name: tft-coach-apk
-          path: android/app/build/outputs/apk/release/*.apk
+          name: tft-coach-apks
+          path: android/app/build/outputs/apk/**/*.apk
 
       # 7. Configurar Python e Poetry
       - name: Set up Python
@@ -54,11 +54,11 @@ jobs:
       - name: Show repo structure
         run: ls -R
 
-      # 9. Configurar PYTHONPATH
+      # 9. Configurar PYTHONPATH para a raiz do repo
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
 
-      # 10. Rodar update_meta de forma confiável
+      # 10. Rodar update_meta como módulo Python (mais confiável)
       - name: Run update_meta
         run: poetry run python -m backend.update_meta
         env:
