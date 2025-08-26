@@ -50,9 +50,15 @@ jobs:
         working-directory: ./tft_
         run: poetry install --no-interaction --no-ansi --no-root
 
-      # 7. Deploy to Render usando Action oficial
+      # 7. Install Render CLI from GitHub Releases
+      - name: Install Render CLI
+        run: |
+          RENDER_CLI_VERSION="v1.10.0"  # substitua pela última versão disponível
+          curl -L "https://github.com/renderinc/render-cli/releases/download/${RENDER_CLI_VERSION}/render-linux" -o /usr/local/bin/render
+          chmod +x /usr/local/bin/render
+
+      # 8. Deploy to Render
       - name: Deploy to Render
-        uses: render-examples/deploy-action@v1
-        with:
-          api-key: ${{ secrets.RENDER_API_KEY }}
-          service-id: srv-d2ms69vfte5s738o8dbg
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: render deploy service --service-id srv-d2ms69vfte5s738o8dbg
