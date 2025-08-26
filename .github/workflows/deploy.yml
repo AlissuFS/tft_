@@ -11,54 +11,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout repository
+      # 1. Checkout do repositório
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Setup Python
+      # 2. Configuração do Python
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.13'
 
-      # 3. Install Poetry
+      # 3. Instalação do Poetry
       - name: Install Poetry
         run: curl -sSL https://install.python-poetry.org | python3 -
 
-      # 4. Ensure pyproject.toml exists
+      # 4. Garantir que pyproject.toml exista
       - name: Ensure pyproject.toml
         run: |
           mkdir -p ./tft_
           cd ./tft_
-          if [ ! -f pyproject.toml ]; then
-            poetry init --name tft --no-interaction
-          fi
-
-      # 5. Cache Poetry dependencies
-      - name: Cache Poetry
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/pypoetry
-            ~/.cache/pip
-          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-poetry-
-
-      # 6. Install dependencies via Poetry (somente dependências)
-      - name: Install dependencies
-        working-directory: ./tft_
-        run: poetry install --no-interaction --no-ansi --no-root
-
-      # 7. Install Render CLI from GitHub Releases
-      - name: Install Render CLI
-        run: |
-          RENDER_CLI_VERSION="v1.10.0"  # substitua pela última versão disponível
-          curl -L "https://github.com/renderinc/render-cli/releases/download/${RENDER_CLI_VERSION}/render-linux" -o /usr/local/bin/render
-          chmod +x /usr/local/bin/render
-
-      # 8. Deploy to Render
-      - name: Deploy to Render
-        env:
-          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-        run: render deploy service --service-id srv-d2ms69vfte5s738o8dbg
