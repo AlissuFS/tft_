@@ -27,9 +27,11 @@ jobs:
       - name: Build APK
         run: ./android/gradlew clean assembleRelease --no-daemon
 
-      # 5. Listar arquivos gerados (opcional, útil para debug)
+      # 5. Listar arquivos gerados para debug
       - name: List APK outputs
-        run: ls -R android/app/build/outputs/apk/
+        run: |
+          echo "Arquivos em build/outputs/apk/release:"
+          ls -alR android/app/build/outputs/apk/release
 
       # 6. Upload do APK gerado (qualquer APK na pasta release)
       - name: Upload APK
