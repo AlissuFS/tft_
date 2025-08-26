@@ -45,20 +45,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-poetry-
 
-      # 6. Install dependencies via Poetry (somente dependências, sem instalar o projeto)
+      # 6. Install dependencies via Poetry (somente dependências)
       - name: Install dependencies
         working-directory: ./tft_
         run: poetry install --no-interaction --no-ansi --no-root
 
-      # 7. Install Render CLI with retry
-      - name: Install Render CLI
-        run: |
-          for i in {1..5}; do
-            curl -sSL https://cdn.render.com/cli/latest/linux/render -o /usr/local/bin/render && break || sleep 5
-          done
-          chmod +x /usr/local/bin/render
+      # 7. Setup Node.js (para instalar Render CLI)
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
-      # 8. Deploy to Render
+      # 8. Install Render CLI via npm
+      - name: Install Render CLI
+        run: npm install -g @render/render-cli
+
+      # 9. Deploy to Render
       - name: Deploy to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
