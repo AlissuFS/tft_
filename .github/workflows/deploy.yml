@@ -11,31 +11,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Pegar o código do repositório
+      # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # 2. Configurar Python
+      # 2. Setup Python
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.13'
 
-      # 3. Instalar Poetry
+      # 3. Install Poetry
       - name: Install Poetry
         run: curl -sSL https://install.python-poetry.org | python3 -
 
-      # 4. Criar diretório do projeto e inicializar pyproject.toml (se não existir)
+      # 4. Ensure pyproject.toml
       - name: Ensure pyproject.toml
         run: |
-          mkdir -p ./tft_   # cria pasta do projeto se não existir
+          mkdir -p ./tft_
           cd ./tft_
           if [ ! -f pyproject.toml ]; then
-            # Define um nome válido para o projeto
             poetry init --name tft --no-interaction
           fi
 
-      # 5. Cache do Poetry (dependências)
+      # 5. Cache Poetry dependencies
       - name: Cache Poetry
         uses: actions/cache@v3
         with:
@@ -46,6 +45,19 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-poetry-
 
-      # 6. Instalar dependências via Poetry
+      # 6. Install dependencies via Poetry
       - name: Install dependencies
-        working-directory: .
+        working-directory: ./tft_
+        run: poetry install --no-interaction --no-ansi
+
+      # 7. Install Render CLI
+      - name: Install Render CLI
+        run: |
+          curl -sSL https://cdn.render.com/cli/latest/linux/render -o /usr/local/bin/render
+          chmod +x /usr/local/bin/render
+
+      # 8. Deploy to Render
+      - name: Deploy to Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: render deploy service --service-id srv-d2ms69vfte5s738o8dbg
