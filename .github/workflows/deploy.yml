@@ -20,4 +20,4 @@ jobs:
       - name: Deploy service on Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
-        run: render deploy service --service-id <srv-d2ms69vfte5s738o8dbg>
+        run: render deploy service --service-id srv-d2ms69vfte5s738o8dbg
