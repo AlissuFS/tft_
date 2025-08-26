@@ -1,0 +1,21 @@
+name: Deploy Backend
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Render CLI
+        run: curl -fsSL https://cdn.render.com/cli/install.sh | bash
+
+      - name: Deploy to Render
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          render deploy service --service-id ${{ secrets.RENDER_SERVICE_ID }}
