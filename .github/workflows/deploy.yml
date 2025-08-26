@@ -1,6 +1,5 @@
 name: Deploy to Render
 
-# Gatilho: roda quando houver push na branch main ou manualmente
 on:
   push:
     branches:
@@ -26,7 +25,16 @@ jobs:
       - name: Install Poetry
         run: curl -sSL https://install.python-poetry.org | python3 -
 
-      # 4. Cache do Poetry (dependências)
+      # 4. Criar diretório do projeto e inicializar pyproject.toml (se não existir)
+      - name: Ensure pyproject.toml
+        run: |
+          mkdir -p ./tft_   # cria pasta do projeto se não existir
+          cd ./tft_
+          if [ ! -f pyproject.toml ]; then
+            poetry init --no-interaction
+          fi
+
+      # 5. Cache do Poetry (dependências)
       - name: Cache Poetry
         uses: actions/cache@v3
         with:
@@ -37,18 +45,18 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-poetry-
 
-      # 5. Instalar dependências via Poetry
+      # 6. Instalar dependências via Poetry
       - name: Install dependencies
-        working-directory: ./   # raiz do repositório
+        working-directory: ./tft_
         run: poetry install --no-interaction --no-ansi
 
-      # 6. Instalar Render CLI via binário
+      # 7. Instalar Render CLI
       - name: Install Render CLI
         run: |
           curl -sSL https://cdn.render.com/cli/latest/linux/render -o /usr/local/bin/render
           chmod +x /usr/local/bin/render
 
-      # 7. Deploy no Render
+      # 8. Deploy no Render
       - name: Deploy to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
