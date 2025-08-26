@@ -50,10 +50,12 @@ jobs:
         working-directory: ./tft_
         run: poetry install --no-interaction --no-ansi --no-root
 
-      # 7. Install Render CLI
+      # 7. Install Render CLI with retry
       - name: Install Render CLI
         run: |
-          curl -sSL https://cdn.render.com/cli/latest/linux/render -o /usr/local/bin/render
+          for i in {1..5}; do
+            curl -sSL https://cdn.render.com/cli/latest/linux/render -o /usr/local/bin/render && break || sleep 5
+          done
           chmod +x /usr/local/bin/render
 
       # 8. Deploy to Render
