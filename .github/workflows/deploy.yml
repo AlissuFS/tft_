@@ -1,11 +1,11 @@
 name: Deploy to Render
 
-# Gatilho: roda quando houver push na branch main
+# Gatilho: roda quando houver push na branch main ou manualmente
 on:
   push:
     branches:
       - main
-  workflow_dispatch:  # permite rodar manualmente pelo GitHub
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -26,17 +26,29 @@ jobs:
       - name: Install Poetry
         run: curl -sSL https://install.python-poetry.org | python3 -
 
-      # 4. Instalar dependências via Poetry
-      - name: Install dependencies
-        run: poetry install
+      # 4. Cache do Poetry (dependências)
+      - name: Cache Poetry
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/pypoetry
+            ~/.cache/pip
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
 
-      # 5. Instalar Render CLI via binário
+      # 5. Instalar dependências via Poetry
+      - name: Install dependencies
+        working-directory: ./   # raiz do repositório
+        run: poetry install --no-interaction --no-ansi
+
+      # 6. Instalar Render CLI via binário
       - name: Install Render CLI
         run: |
           curl -sSL https://cdn.render.com/cli/latest/linux/render -o /usr/local/bin/render
           chmod +x /usr/local/bin/render
 
-      # 6. Deploy no Render
+      # 7. Deploy no Render
       - name: Deploy to Render
         env:
           RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
