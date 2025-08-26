@@ -27,20 +27,18 @@ jobs:
       - name: Build APK
         run: ./android/gradlew clean assembleRelease --no-daemon
 
-      # 5. Listar arquivos gerados para debug
+      # 5. Listar arquivos gerados (debug)
       - name: List APK outputs
-        run: |
-          echo "Arquivos em build/outputs/apk/release:"
-          ls -alR android/app/build/outputs/apk/release
+        run: ls -alR android/app/build/outputs/apk/release
 
-      # 6. Upload do APK gerado (qualquer APK na pasta release)
+      # 6. Upload do APK
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: tft-coach-apk
           path: android/app/build/outputs/apk/release/*.apk
 
-      # 7. Configurar Python com Poetry
+      # 7. Configurar Python e Poetry
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -52,22 +50,16 @@ jobs:
           pip install poetry
           poetry install --no-interaction --no-ansi
 
-      # 8. Debug do diretório e arquivos (para garantir que 'backend' exista)
-      - name: Show current folder and files
-        run: |
-          echo "Current working directory:"
-          pwd
-          echo "Listing all files:"
-          ls -R
+      # 8. Debug: verificar estrutura do repositório
+      - name: Show repo structure
+        run: ls -R
 
-      # 9. Set PYTHONPATH
+      # 9. Configurar PYTHONPATH
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
 
-      # 10. Rodar update_meta
+      # 10. Rodar update_meta de forma confiável
       - name: Run update_meta
-        run: |
-          echo "Running update_meta..."
-          poetry run python -m backend.update_meta
+        run: poetry run python -m backend.update_meta
         env:
           TFT_META_API_KEY: ${{ secrets.TFT_META_API_KEY }}
